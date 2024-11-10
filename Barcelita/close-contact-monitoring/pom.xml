@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ccinfo-208</groupId>
+  <artifactId>close-contact-monitoring</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Close Contact Monitoring Database Application</name>
+  <description>A CMD-based close contact monitoring database application connected to a MySQL relational database on the cloud. Part of the requirements for CCINFOM Term 1, SY 2024 - 2025, and developed and submitted by Aaron John C. Barcelita (CCINFO-208).</description>
+  
+  <dependencies>
+    <!-- MySQL Connector/J dependency -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.33</version> <!-- Use the latest version -->
+    </dependency>
+	</dependencies>
+	
+	<properties>
+	    <maven.compiler.source>21</maven.compiler.source>
+	    <maven.compiler.target>21</maven.compiler.target>
+	</properties>
+</project>
