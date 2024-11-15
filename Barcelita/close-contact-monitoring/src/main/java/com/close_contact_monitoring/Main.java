@@ -3,7 +3,26 @@ package com.close_contact_monitoring;
 import java.util.*; //Scanner and InputMismatchException
 
 public class Main {
-	public static void main(String[] args) {
+	//why make DAOs as attributes of main?
+	
+	
+	public Main() {
+		
+	}
+	
+	private void managePatientRecord() {
+		
+	}
+	
+	private void registerAndMonitorPatientContacts() {
+		
+	}
+	
+	private void generateContactMonitoringReport() {
+		
+	}
+	
+	private void run() {
 		Scanner sc = new Scanner(System.in);
 		boolean exitApp = false;
 		int choice = -1;
@@ -21,6 +40,8 @@ public class Main {
 			} catch (InputMismatchException e){
 				System.err.println("ERROR. Please enter a valid INTEGER.");
 				e.printStackTrace();
+				sc.next();
+				continue;
 			}
 			
 			switch(choice) {
@@ -47,5 +68,11 @@ public class Main {
 			}
 		}
 	}
-
+	
+	public static void main(String[] args) {
+		//create DAO objects
+		
+		Main app = new Main();
+		app.run();
+	}
 }
