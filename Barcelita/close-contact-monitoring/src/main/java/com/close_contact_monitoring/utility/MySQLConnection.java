@@ -9,9 +9,14 @@ import java.sql.SQLException;
  * 	Provides methods to start and close connections to specified MySQL database.
  */
 public class MySQLConnection {
-	private static final String DB_URL = "";
-	private static final String DB_USERNAME = "";
-	private static final String DB_PW = "";
+	private static final String DB_URL = "jdbc:mysql://localhost:3306/ccinfo208db?useSSL=false&serverTimezone=UTC"; //this uses db on my local machine
+	private static final String DB_USERNAME = "root";
+	private static final String DB_PW = "Frieren.#6950";
+
+	// ANSI escape codes for color formatting
+	public static final String RESET = "\033[0m";  // Reset color
+    public static final String GREEN = "\033[0;32m";  // Green
+    public static final String RED = "\033[0;31m";  // Red
 	
 	/**
      * 	Establishes a connection to the MySQL database using the provided URL, username, and password.
@@ -20,7 +25,14 @@ public class MySQLConnection {
      * 	@throws SQLException If a database access error occurs or the URL is incorrect.
      */
 	public static Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PW);
+		try {
+			Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PW);
+			System.out.println(GREEN + "Connection to CCINFO208DB established successfully." + RESET);
+			return connection;
+		} catch (SQLException e) {
+			System.err.println(RED + "Failed to establish a connection to CCINFO208DB: " + e.getMessage() + RESET);
+			throw e;
+		}
 	}
 	
 	/**
@@ -33,8 +45,9 @@ public class MySQLConnection {
 		if (connection != null) {
 			try {
 				connection.close();
+				System.out.println(GREEN + "Connection to CCINFO208DB closed successfully.\n" + RESET);
 			} catch (SQLException e){
-				e.printStackTrace();
+				System.err.println(RED + "Failed to close connection to CCINFO208DB: " + e.getMessage() + "\n" + RESET);
 			}
 		}
 	}
