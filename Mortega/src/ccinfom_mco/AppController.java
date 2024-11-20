@@ -354,12 +354,8 @@ public class AppController {
 		int caseno = sc.nextInt(); 
 
 		if (PrescriptionsDB.checkCaseNo(caseno) == 1 && PrescriptionsDB.toBePrescribed(caseno) == 1 ) {
-			System.out.print("Physician PRC License Number:"); 
-			int prcno = sc.nextInt(); 
 
-		if (PrescriptionsDB.checkPhyID(prcno, caseno) == 1) {
 			pdb.patientCaseID = caseno;
-			pdb.physicianPRCLicNumber = prcno;
 
 			System.out.print("Prescription Serial Number:"); 
 			do {
@@ -442,12 +438,6 @@ public class AppController {
 			System.out.println("Processing Rx...");
 
 			return pdb.submit_prescriptions();
-		}
-		else {
-			System.out.println("=======================================================");
-			System.out.println("Please ensure that the numbers provided are valid and correct!");
-			return 0;
-		}
 	} else {
 		System.out.println("=======================================================");
 		System.out.println("Patient Case Number does not exist!");

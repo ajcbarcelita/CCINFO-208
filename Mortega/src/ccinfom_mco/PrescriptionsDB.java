@@ -212,12 +212,11 @@ public int submit_prescriptions() {
         conn.setAutoCommit(false);
 
         // insert prescription into prescription table
-        String insertPrescriptionSQL = "INSERT INTO prescription (prescription_serialno, caseno, physician_prcID, date_given) VALUES (?, ?, ?, ?)";
+        String insertPrescriptionSQL = "INSERT INTO prescription (prescription_serialno, caseno, date_given) VALUES (?, ?, ?, ?)";
         insertPrescription = conn.prepareStatement(insertPrescriptionSQL);
         insertPrescription.setString(1, prescriptionSerialNumber);
         insertPrescription.setInt(2, patientCaseID);
-        insertPrescription.setInt(3, physicianPRCLicNumber);
-        insertPrescription.setDate(4, date);
+        insertPrescription.setDate(3, date);
 
         insertPrescription.executeUpdate();
 
@@ -312,7 +311,6 @@ public int submit_prescriptions() {
     
             System.out.println("Prescription Serial Number: " + prescriptionRs.getString("prescription_serialno"));
             System.out.println("Patient Case Number: " + prescriptionRs.getInt("caseno"));
-            System.out.println("Physician PRC License Number: " + prescriptionRs.getInt("physician_prcID"));
             System.out.println("Date: " + prescriptionRs.getDate("date_given"));
     
             medicineStmt = conn.prepareStatement(medicineQuery);
@@ -332,7 +330,7 @@ public int submit_prescriptions() {
             return 1;
         } catch (SQLException e) {
             e.printStackTrace();
-            return -1; // Error
+            return -1; // error
         } finally {
             try {
                 if (prescriptionRs != null) prescriptionRs.close();
