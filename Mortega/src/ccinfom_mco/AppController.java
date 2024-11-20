@@ -440,7 +440,12 @@ public class AppController {
 			return pdb.submit_prescriptions();
 	} else {
 		System.out.println("=======================================================");
-		System.out.println("Patient Case Number does not exist!");
+		if (PrescriptionsDB.checkCaseNo(caseno) == 0) {
+			System.out.println("Patient Case Number does not exist!");
+		}
+		else {
+			System.out.println("Patient cannot be prescrbed! \n Please wait for the patient's health assessment!");
+		}
 		return 0;
 	}
 
