@@ -20,7 +20,7 @@ public class PrescriptionsDB {
     public int physicianPRCLicNumber;
     public Date date;                          
     public ArrayList<String> prescriptionNames = new ArrayList<>();
-    public ArrayList<Integer> dosage = new ArrayList<>();
+    public ArrayList<Double> dosage = new ArrayList<>();
     public ArrayList<Integer> frequency = new ArrayList<>();
     public ArrayList<Integer> duration = new ArrayList<>();
 
@@ -201,69 +201,70 @@ public class PrescriptionsDB {
 
 
     //returns 1 if successful, 0 otherwise
-    //check if pres serial number doesnt exist yet
-    public int submit_prescriptions() {
-        Connection conn = null;
-        PreparedStatement insertPrescription = null;
-        PreparedStatement insertMedicine = null;
-    
-        try {
-            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            conn.setAutoCommit(false);
-    
-            // insert prescription into prescription table
-            String insertPrescriptionSQL = "INSERT INTO prescription (prescription_serialno, caseno, physician_prcID, date_given) VALUES (?, ?, ?, ?)";
-            insertPrescription = conn.prepareStatement(insertPrescriptionSQL);
-            insertPrescription.setString(1, prescriptionSerialNumber);
-            insertPrescription.setInt(2, patientCaseID);
-            insertPrescription.setInt(3, physicianPRCLicNumber);
-            insertPrescription.setDate(4, date);
-    
-            insertPrescription.executeUpdate();
-    
-            // insert medicines into prescription_medicine table
-            String insertMedicineSQL = "INSERT INTO prescription_medicine (prescription_serialno, generic_name, dosage, dose_frequency, duration) VALUES (?, ?, ?, ?, ?)";
-            insertMedicine = conn.prepareStatement(insertMedicineSQL);
-    
-            for (int i = 0; i < prescriptionNames.size(); i++) {
-                insertMedicine.setString(1, prescriptionSerialNumber); //FK to prescription
-                insertMedicine.setString(2, prescriptionNames.get(i));
-                insertMedicine.setInt(3, dosage.get(i));
-                insertMedicine.setInt(4, frequency.get(i));
-                insertMedicine.setInt(5, duration.get(i));
-    
-                insertMedicine.addBatch(); // group commands
-            }
-    
-            // execute batch insert for prescription_medicine in one go
-            insertMedicine.executeBatch();
-    
-            // save
-            conn.commit();
-            System.out.println("Prescription and medicines successfully submitted.");
-    
-            return 1; // saved
-    
-        } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback(); //  undo the changes made in the transaction
-                } catch (SQLException rollbackEx) {
-                    rollbackEx.printStackTrace();
-                }
-            }
-            e.printStackTrace();
-            return 0; // failed
-        } finally {
+//check if pres serial number doesnt exist yet
+public int submit_prescriptions() {
+    Connection conn = null;
+    PreparedStatement insertPrescription = null;
+    PreparedStatement insertMedicine = null;
+
+    try {
+        conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        conn.setAutoCommit(false);
+
+        // insert prescription into prescription table
+        String insertPrescriptionSQL = "INSERT INTO prescription (prescription_serialno, caseno, physician_prcID, date_given) VALUES (?, ?, ?, ?)";
+        insertPrescription = conn.prepareStatement(insertPrescriptionSQL);
+        insertPrescription.setString(1, prescriptionSerialNumber);
+        insertPrescription.setInt(2, patientCaseID);
+        insertPrescription.setInt(3, physicianPRCLicNumber);
+        insertPrescription.setDate(4, date);
+
+        insertPrescription.executeUpdate();
+
+        // insert medicines into prescription_medicine table
+        String insertMedicineSQL = "INSERT INTO prescription_medicine (prescription_serialno, generic_name, dosage, dose_frequency, duration) VALUES (?, ?, ?, ?, ?)";
+        insertMedicine = conn.prepareStatement(insertMedicineSQL);
+
+        for (int i = 0; i < prescriptionNames.size(); i++) {
+            insertMedicine.setString(1, prescriptionSerialNumber); //FK to prescription
+            insertMedicine.setString(2, prescriptionNames.get(i));
+            insertMedicine.setDouble(3, dosage.get(i)); // Changed to setDouble
+            insertMedicine.setInt(4, frequency.get(i));
+            insertMedicine.setInt(5, duration.get(i));
+
+            insertMedicine.addBatch(); // group commands
+        }
+
+        // execute batch insert for prescription_medicine in one go
+        insertMedicine.executeBatch();
+
+        // save
+        conn.commit();
+        System.out.println("Prescription and medicines successfully submitted.");
+
+        return 1; // saved
+
+    } catch (SQLException e) {
+        if (conn != null) {
             try {
-                if (insertMedicine != null) insertMedicine.close();
-                if (insertPrescription != null) insertPrescription.close();
-                if (conn != null) conn.close();
-            } catch (SQLException closeEx) {
-                closeEx.printStackTrace();
+                conn.rollback(); //  undo the changes made in the transaction
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
             }
         }
+        e.printStackTrace();
+        return 0; // failed
+    } finally {
+        try {
+            if (insertMedicine != null) insertMedicine.close();
+            if (insertPrescription != null) insertPrescription.close();
+            if (conn != null) conn.close();
+        } catch (SQLException closeEx) {
+            closeEx.printStackTrace();
+        }
     }
+}
+
     
                                                   
     /* NOTE: 
@@ -293,13 +294,13 @@ public class PrescriptionsDB {
         try {
             conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     
-            //prescription details
+            // Prescription details
             prescriptionStmt = conn.prepareStatement(prescriptionQuery);
             prescriptionStmt.setInt(1, patientCaseID);
             prescriptionStmt.setString(2, prescriptionSerialNumber);
             prescriptionRs = prescriptionStmt.executeQuery();
     
-            // no prescription, return 0
+            // No prescription, return 0
             if (!prescriptionRs.next()) {
                 System.out.println("No prescription found for the given case number and serial number.");
                 return 0;
@@ -308,7 +309,7 @@ public class PrescriptionsDB {
             System.out.println("=======================================================");
             System.out.println("                 Prescription Details ");
             System.out.println("=======================================================");
-
+    
             System.out.println("Prescription Serial Number: " + prescriptionRs.getString("prescription_serialno"));
             System.out.println("Patient Case Number: " + prescriptionRs.getInt("caseno"));
             System.out.println("Physician PRC License Number: " + prescriptionRs.getInt("physician_prcID"));
@@ -318,11 +319,11 @@ public class PrescriptionsDB {
             medicineStmt.setString(1, prescriptionSerialNumber);
             medicineRs = medicineStmt.executeQuery();
     
-            // display
+            // Display medicines
             System.out.println("\nMedicines:");
             while (medicineRs.next()) {
                 System.out.println("Medicine Name: " + medicineRs.getString("generic_name"));
-                System.out.println("Dosage: " + medicineRs.getString("dosage"));
+                System.out.println("Dosage: " + medicineRs.getDouble("dosage")); // Changed to getDouble
                 System.out.println("Dose Frequency: " + medicineRs.getString("dose_frequency"));
                 System.out.println("Duration: " + medicineRs.getString("duration"));
                 System.out.println("-------------------------------------------------------");
@@ -331,7 +332,7 @@ public class PrescriptionsDB {
             return 1;
         } catch (SQLException e) {
             e.printStackTrace();
-            return -1; // error
+            return -1; // Error
         } finally {
             try {
                 if (prescriptionRs != null) prescriptionRs.close();
@@ -344,6 +345,7 @@ public class PrescriptionsDB {
             }
         }
     }
+    
 
 
     public int delete_prescriptions() {

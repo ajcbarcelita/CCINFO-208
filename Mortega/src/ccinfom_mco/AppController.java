@@ -395,7 +395,9 @@ public class AppController {
 		
 			String[] medData = new String[nMed];    // Medicine Name (Generic Name)
 			int[][] qdf_ds = new int[nMed][3];      // Medicine Quantity, Dosage, Frequency
+			double[] dosage = new double[nMed];
 			Arrays.fill(medData, null);
+			Arrays.fill(dosage, 0.0);
 		
 			for (int i = 0; i < nMed; i++) {  		// Initialization
 				Arrays.fill(qdf_ds[i], -1);
@@ -419,7 +421,7 @@ public class AppController {
 		
 				while(qdf_ds[i][0] < 0 || qdf_ds[i][1] < 0 || qdf_ds[i][2] < 0) { 
 					System.out.print("Medicine # " + y + "Dosage (mg/mL): ");  
-					qdf_ds[i][0] = sc.nextInt();
+					dosage[i] = sc.nextInt();
 
 					System.out.print("Medicine # " + y + " Frequency (Per Day): ");  
 					qdf_ds[i][1] = sc.nextInt();
@@ -431,7 +433,7 @@ public class AppController {
 						System.out.println("Please enter non-negative values for Dosage, Frequency, and Intake Duration.");
 					}
 				}
-				pdb.dosage.add(qdf_ds[i][0]);
+				pdb.dosage.add(dosage[i]);
 				pdb.frequency.add(qdf_ds[i][1]);
 				pdb.frequency.add(qdf_ds[i][2]);
 			}
