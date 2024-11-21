@@ -133,7 +133,7 @@ public class PrescriptionsDB {
 
             if (rs.next()) {
                 String toBePrescribedValue = rs.getString("toBePrescribed");
-                if ("Y".equalsIgnoreCase(toBePrescribedValue)) {
+                if ("F".equalsIgnoreCase(toBePrescribedValue)) {
                     return 1; // toBePrescribed is 'Y'
                 } else if ("N".equalsIgnoreCase(toBePrescribedValue)) {
                     return 0; // toBePrescribed is 'N'
