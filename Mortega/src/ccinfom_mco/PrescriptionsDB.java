@@ -11,9 +11,9 @@ import java.util.ArrayList;
 public class PrescriptionsDB {
 
     // variables
-    private static final String DB_URL = "";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "DLSU1234!";
+    private static final String DB_URL = "jdbc:mysql://153.92.15.3:3306/u400425564_ccinfo208db";
+    private static final String DB_USER = "u400425564_root";
+    private static final String DB_PASSWORD = "DLSUm1234!";
 
     public String prescriptionSerialNumber;
     public int patientCaseID;
