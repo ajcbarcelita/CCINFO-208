@@ -615,9 +615,5 @@ public class AppController {
 
 
 
-	public static void main(String[] args) {
-		main_controller();
-	}
-
 }
 
