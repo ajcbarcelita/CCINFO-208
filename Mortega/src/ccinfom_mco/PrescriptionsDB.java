@@ -321,8 +321,8 @@ public int submit_prescriptions() {
             System.out.println("\nMedicines:");
             while (medicineRs.next()) {
                 System.out.println("Medicine Name: " + medicineRs.getString("generic_name"));
-                System.out.println("Dosage: " + medicineRs.getDouble("dosage")); // Changed to getDouble
-                System.out.println("Dose Frequency: " + medicineRs.getString("dose_frequency"));
+                System.out.println("Dosage (mg/kg): " + medicineRs.getDouble("dosage")); // Changed to getDouble
+                System.out.println("Dose Frequency (per day): " + medicineRs.getString("dose_frequency"));
                 System.out.println("Duration: " + medicineRs.getString("duration"));
                 System.out.println("-------------------------------------------------------");
             }

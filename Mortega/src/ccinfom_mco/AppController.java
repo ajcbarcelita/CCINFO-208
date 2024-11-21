@@ -416,7 +416,7 @@ public class AppController {
 				pdb.prescriptionNames.add(medData[i]);
 		
 				while(qdf_ds[i][0] < 0 || qdf_ds[i][1] < 0 || qdf_ds[i][2] < 0) { 
-					System.out.print("Medicine # " + y + "Dosage (mg/mL): ");  
+					System.out.print("Medicine # " + y + "Dosage (mg/kg): ");  
 					dosage[i] = sc.nextInt();
 
 					System.out.print("Medicine # " + y + " Frequency (Per Day): ");  
