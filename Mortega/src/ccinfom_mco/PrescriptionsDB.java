@@ -367,7 +367,7 @@ public int submit_prescriptions() {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            conn.setAutoCommit(false);  // Disable auto-commit for transaction management
+            conn.setAutoCommit(false); 
             
             // Delete medicines first
             int medicineRowsDeleted = deletePrescriptionMedicines(conn, prescriptionSerialNumber);
