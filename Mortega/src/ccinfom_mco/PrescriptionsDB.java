@@ -344,43 +344,44 @@ public int submit_prescriptions() {
             }
         }
     }
-    
 
 
-    public int delete_prescriptions() {
-        // Queries
+    public int deletePrescriptionMedicines(Connection conn, String prescriptionSerialNumber) throws SQLException {
         String deleteMedicineQuery = "DELETE FROM prescription_medicine WHERE prescription_serialno = ?";
+        try (PreparedStatement deleteMedicineStmt = conn.prepareStatement(deleteMedicineQuery)) {
+            deleteMedicineStmt.setString(1, prescriptionSerialNumber);
+            return deleteMedicineStmt.executeUpdate();
+        }
+    }
+   
+    public int deletePrescription(Connection conn, int patientCaseID, String prescriptionSerialNumber) throws SQLException {
         String deletePrescriptionQuery = "DELETE FROM prescription WHERE caseno = ? AND prescription_serialno = ?";
-        
+        try (PreparedStatement deletePrescriptionStmt = conn.prepareStatement(deletePrescriptionQuery)) {
+            deletePrescriptionStmt.setInt(1, patientCaseID);
+            deletePrescriptionStmt.setString(2, prescriptionSerialNumber);
+            return deletePrescriptionStmt.executeUpdate();
+        }
+    }
+   
+    public int delete_prescriptions() {
         Connection conn = null;
-        PreparedStatement deleteMedicineStmt = null;
-        PreparedStatement deletePrescriptionStmt = null;
-        
         try {
-            // Establish the database connection
             conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
             conn.setAutoCommit(false);  // Disable auto-commit for transaction management
             
-            // Delete medicines from prescription_medicine
-            deleteMedicineStmt = conn.prepareStatement(deleteMedicineQuery);
-            deleteMedicineStmt.setString(1, prescriptionSerialNumber);
-            deleteMedicineStmt.executeUpdate();
+            // Delete medicines first
+            int medicineRowsDeleted = deletePrescriptionMedicines(conn, prescriptionSerialNumber);
             
-            // Now delete the prescription
-            deletePrescriptionStmt = conn.prepareStatement(deletePrescriptionQuery);
-            deletePrescriptionStmt.setInt(1, patientCaseID);
-            deletePrescriptionStmt.setString(2, prescriptionSerialNumber);
-            int rowsDeleted = deletePrescriptionStmt.executeUpdate();
-            
-            if (rowsDeleted == 0) {
-                System.out.println("No matching prescription found for deletion.");
-                conn.rollback();  // Rollback if no prescription was deleted
-                return 0;
+            // If medicine rows were deleted, then delete the prescription
+            if (medicineRowsDeleted > 0) {
+                int prescriptionRowsDeleted = deletePrescription(conn, patientCaseID, prescriptionSerialNumber);
+                conn.commit();  // Commit the transaction
+                System.out.println("Prescription and associated medicines deleted successfully.");
+                return prescriptionRowsDeleted;
+            } else {
+                System.out.println("No medicines found for this prescription serial number.");
+                return -1;
             }
-            
-            conn.commit();  // Commit the transaction
-            System.out.println("Prescription and associated medicines deleted successfully.");
-            return 1;
         } catch (SQLException e) {
             e.printStackTrace();
             try {
@@ -391,14 +392,12 @@ public int submit_prescriptions() {
             return -1;
         } finally {
             try {
-                if (deleteMedicineStmt != null) deleteMedicineStmt.close();
-                if (deletePrescriptionStmt != null) deletePrescriptionStmt.close();
                 if (conn != null) conn.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+   
 }
 
