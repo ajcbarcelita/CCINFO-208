@@ -53,7 +53,7 @@ public class PrescriptionsDB {
             e.printStackTrace();
             return 0; 
         }
-    } //is ths method supposed to know if the prc is assigned to the patient case 
+    }  
 
     
     
