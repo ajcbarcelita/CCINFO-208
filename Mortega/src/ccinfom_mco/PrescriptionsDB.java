@@ -122,7 +122,7 @@ public class PrescriptionsDB {
      * 
      * returns 0, otherwise
      */
-    public static int toBePrescribedStatus(int caseno) {
+    public static int toBePrescribed(int caseno) {
         String sql = "SELECT toBePrescribed FROM patient_case WHERE patientcaseno = ?";
         int statusVar = 0; // Default to 0 (F)
     

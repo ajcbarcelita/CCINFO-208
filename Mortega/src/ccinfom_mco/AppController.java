@@ -433,7 +433,7 @@ public class AppController {
 			System.out.println("Patient Case Number does not exist!");
 		}
 		else {
-			System.out.println("Patient cannot be prescrbed! \nPlease wait for the patient's health assessment!");
+			System.out.println("Patient cannot be prescribed! \nPlease wait for the patient's health assessment!");
 		}
 		return 0;
 	}
