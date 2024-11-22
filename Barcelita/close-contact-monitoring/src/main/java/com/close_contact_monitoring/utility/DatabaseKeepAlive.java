@@ -1,0 +1,36 @@
+package com.close_contact_monitoring.utility;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class DatabaseKeepAlive {
+    private final Connection connection;
+    private final int intervalMillis; // Keep-alive interval in milliseconds
+
+    public DatabaseKeepAlive(Connection connection, int intervalMillis) {
+        this.connection = connection;
+        this.intervalMillis = intervalMillis;
+    }
+
+    public void start() {
+        Thread keepAliveThread = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(intervalMillis);
+                    // Send a lightweight query
+                    try (PreparedStatement stmt = connection.prepareStatement("SELECT 1")) {
+                        stmt.executeQuery();
+                    }
+                } catch (SQLException | InterruptedException e) {
+                    System.err.println("Keep-alive error: " + e.getMessage());
+                    break;
+                }
+            }
+        });
+
+        keepAliveThread.setDaemon(true); // Daemon thread stops when the app exits
+        keepAliveThread.start();
+    }
+}
+

@@ -11,6 +11,10 @@ public class CloseContact {
     private char sex; //allowed values: ENUM('M', 'F')
     private char is_elevated_to_patient; //allowed values: ENUM('Y', 'N')
 
+    public CloseContact() {
+
+    }
+
     public CloseContact(int closeContactID, String lastname, String firstname, String middlename, LocalDate birthdate, char sex, char is_elevated_to_patient) {
         this.closeContactID = closeContactID;
         this.lastname = lastname;

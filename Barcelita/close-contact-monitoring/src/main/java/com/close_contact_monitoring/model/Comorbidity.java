@@ -4,6 +4,10 @@ public class Comorbidity {
     private int comorbidityID; //PK
     private String comorbidityName;
 
+    public Comorbidity() {
+
+    }
+    
     public Comorbidity(int comorbidityID, String comorbidityName) {
         this.comorbidityID = comorbidityID;
         this.comorbidityName = comorbidityName;
