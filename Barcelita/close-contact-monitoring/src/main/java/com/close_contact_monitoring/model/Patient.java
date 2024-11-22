@@ -18,6 +18,10 @@ public class Patient {
 	private ArrayList<PatientComorbidity> comorbidities;
 	private ArrayList<PatientGuardian> guardians;
 	
+	public Patient() {
+		
+	}
+
 	public Patient(int patientID, String lastname, String firstname, String middlename, LocalDate birthdate, char sex, char is_bcg_vaccinated, int addressID, int closeContactCaseID) {
         this.patientID = patientID;
         this.lastname = lastname;

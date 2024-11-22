@@ -2,11 +2,16 @@ package com.close_contact_monitoring;
 
 import java.util.*; //Scanner and InputMismatchException
 import java.sql.*;
+import com.close_contact_monitoring.model.*;
+import com.close_contact_monitoring.dao.*;
 import com.close_contact_monitoring.utility.*;
 
 public class Main {
 	//why make DAOs as attributes of main?
 	private Scanner sc;
+	private PatientDAO patientDAO;
+	// private AddressDAO addressDAO;
+	// private CloseContactDAO barangayDAO;
 
 	// ANSI escape codes for text colors
     public static final String RESET = "\033[0m";      // Reset color
@@ -15,33 +20,183 @@ public class Main {
 	public static final String ORANGE = "\033[38;5;214m"; // Orange 
     public static final String BLUE = "\033[0;34m";   // Blue
 
-	public Main() {
-		sc = new Scanner(System.in);
+	public Main(PatientDAO patientDAO, AddressDAO addressDAO, CloseContactDAO barangayDAO) {
+		this.sc = new Scanner(System.in);
+		this.patientDAO = patientDAO;
+		// this.addressDAO = addressDAO;
+		// this.barangayDAO = barangayDAO;
 	}
 	
-	private void managePatientRecord() {
-		
-	}
+	private void managePatientCoreData() {
+        boolean exitSubMenu = false;
+
+        while (!exitSubMenu) {
+            System.out.println(ORANGE + "\nManage Patient Core Data\n" + RESET);
+            System.out.println("[1] Create Patient Record.");
+            System.out.println("[2] View Patient Record using Patient ID.");
+            System.out.println("[3] Update Patient Record.");
+            System.out.println("[4] (Soft) Delete Patient Record.\n");
+			System.out.println("[5] Add Guardian to Patient Record.");
+			System.out.println("[6] View Guardian/s of Patient Record.");
+			System.out.println("[7] Delete a Guardian of Patient Record.\n");
+            System.out.println("[8] Add Comorbidity to Patient Record.");
+            System.out.println("[9] View Comorbidities of Patient Record.");
+			System.out.println("[10] Delete a Comorbidity of Patient Record.\n");
+            System.out.println("[11] Add Patient TB Case to Patient Record.");
+			System.out.println("[12] View Patient TB Cases of Patient Record.");
+			System.out.println("[13] (Soft) Delete a Patient TB Case of Patient Record.\n");
+			System.out.println("[14] View a Patient Record and All Associated Records.");
+			System.out.println("[15] Back to Main Menu.");
+            System.out.print("Enter choice: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+					// Add your code for creating a patient record here
+					System.out.println(ORANGE + "\nCreate Patient Record selected.\n" + RESET);
+					patientDAO.addPatient();
+					break;
+				case 2:
+					// Add your code for viewing a patient record using patient ID here
+					System.out.println(ORANGE + "\nView a Patient Record using Patient ID selected.\n" + RESET);
+					int patientID = InputUtility.getIntInput("Enter Patient ID: ");
+					Patient patient = patientDAO.getPatientByID(patientID);
+					if (patient != null) {
+						patientDAO.printPatientDetails(patient);
+					} else {
+						System.out.println("Patient not found.");
+					}
+					break;
+				case 3:
+					// Add your code for updating a patient record here
+					System.out.println(ORANGE + "Update Patient Record selected." + RESET);
+					int toupdate_patientID = InputUtility.getIntInput("Enter Patient ID: ");
+					Patient toupdate_patient = patientDAO.getPatientByID(toupdate_patientID);
+					if (toupdate_patient != null) {
+						patientDAO.updatePatient(toupdate_patientID);
+					} else {
+						System.out.println("Patient not found.");
+					}
+					break;
+				case 4:
+					// Add your code for (soft) deleting a patient record here
+					System.out.println("(Soft) Delete Patient Record selected.");
+					break;
+				case 5:
+					// Add your code for adding a guardian to a patient record here
+					System.out.println("Add Guardian to Patient Record selected.");
+					break;
+				case 6:
+					// Add your code for viewing guardians of a patient record here
+					System.out.println("View Guardian/s of Patient Record selected.");
+					break;
+				case 7:
+					// Add your code for deleting a guardian of a patient record here
+					System.out.println("Delete a Guardian of Patient Record selected.");
+					break;
+				case 8:
+					// Add your code for adding a comorbidity to a patient record here
+					System.out.println("Add Comorbidity to Patient Record selected.");
+					break;
+				case 9:
+					// Add your code for viewing comorbidities of a patient record here
+					System.out.println("View Comorbidities of Patient Record selected.");
+					break;
+				case 10:
+					// Add your code for deleting a comorbidity of a patient record here
+					System.out.println("Delete a Comorbidity of Patient Record selected.");
+					break;
+				case 11:
+					// Add your code for adding a patient TB case to a patient record here
+					System.out.println("Add Patient TB Case to Patient Record selected.");
+					break;
+				case 12:
+					// Add your code for viewing patient TB cases of a patient record here
+					System.out.println("View Patient TB Cases of Patient Record selected.");
+					break;
+				case 13:
+					// Add your code for (soft) deleting a patient TB case of a patient record here
+					System.out.println("(Soft) Delete a Patient TB Case of Patient Record selected.");
+					break;
+				case 14:
+					// Add your code for viewing a patient record and all associated records here
+					System.out.println("View a Patient Record and All Associated Records selected.");
+					break;
+				case 15:
+					exitSubMenu = true;
+            }
+        }
+    }
+
+    private void registerAndMonitorPatientContacts() {
+        System.out.println(ORANGE + "Register and Monitor Patient Contacts\n" + RESET);
+        boolean exitSubMenu = false;
+        while (!exitSubMenu) {
+            System.out.println(ORANGE + "Register and Monitor Patient Contacts\n" + RESET);
+            System.out.println("[1] Register Contact");
+            System.out.println("[2] Monitor Contact");
+            System.out.println("[3] Back to Main Menu");
+            System.out.print("Enter choice: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    // Add your code for registering a contact here
+                    System.out.println("Register Contact selected.");
+                    break;
+                case 2:
+                    // Add your code for monitoring a contact here
+                    System.out.println("Monitor Contact selected.");
+                    break;
+                case 3:
+                    exitSubMenu = true;
+                    break;
+                default:
+                    System.out.println(RED + "Invalid choice. Please enter a valid choice.\n" + RESET);
+            }
+        }
+    }
+
+    private void generateContactMonitoringReport() {
+        System.out.println(ORANGE + "Generate Contact Monitoring Report\n" + RESET);
+        boolean exitSubMenu = false;
+        while (!exitSubMenu) {
+            System.out.println(ORANGE + "Generate Contact Monitoring Report\n" + RESET);
+            System.out.println("[1] Generate Daily Report");
+            System.out.println("[2] Generate Weekly Report");
+            System.out.println("[3] Generate Monthly Report");
+            System.out.println("[4] Back to Main Menu");
+            System.out.print("Enter choice: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    // Add your code for generating a daily report here
+                    System.out.println("Generate Daily Report selected.");
+                    break;
+                case 2:
+                    // Add your code for generating a weekly report here
+                    System.out.println("Generate Weekly Report selected.");
+                    break;
+                case 3:
+                    // Add your code for generating a monthly report here
+                    System.out.println("Generate Monthly Report selected.");
+                    break;
+                case 4:
+                    exitSubMenu = true;
+                    break;
+                default:
+                    System.out.println(RED + "Invalid choice. Please enter a valid choice.\n" + RESET);
+            }
+        }
+    }
 	
-	private void registerAndMonitorPatientContacts() {
-		
-	}
-	
-	private void generateContactMonitoringReport() {
-		
-	}
-	
-	private void run() {
+	private void run(Connection connection) {
 		boolean exitApp = false;
 		int choice = -1;
-		
-		Connection connection = null;
-		try {
-			connection = MySQLConnection.getConnection(); // Establish the connection here
-		} catch (SQLException e) {
-			sc.close();
-			return; // Exit the method if the connection fails
-		}
 		
 		while (!exitApp) {
 			System.out.println("====================================");
@@ -65,6 +220,7 @@ public class Main {
 				case 1:
 					//create sub-menu later on for the management of patient records.
 					System.out.println(ORANGE + "Manage Patient Records (CRUDS) selected.\n" + RESET);
+					managePatientCoreData();
 				break;
 				
 				case 2:
@@ -93,8 +249,18 @@ public class Main {
 	
 	public static void main(String[] args) {
 		//create DAO objects
-		
-		Main app = new Main();
-		app.run();
+		Connection connection = null;
+		try {
+			connection = MySQLConnection.getConnection(); // Establish the connection here
+		} catch (SQLException e) {
+			return; // Exit the method if the connection fails
+		}
+
+		PatientDAO patientDAO = new PatientDAO(connection);
+		AddressDAO addressDAO = new AddressDAO(connection);
+		CloseContactDAO barangayDAO = new CloseContactDAO(connection);
+
+		Main app = new Main(patientDAO, addressDAO, barangayDAO);
+		app.run(connection);
 	}
 }
