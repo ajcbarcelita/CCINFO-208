@@ -133,8 +133,8 @@ public class PrescriptionsDB {
             ResultSet rs = pstmt.executeQuery();
     
             if (rs.next()) {
-                String toBePrescribedValue = rs.getString("toBePrescribed").trim(); // Trim any spaces
-                if ("T".equalsIgnoreCase(toBePrescribedValue)) {
+                String toBePrescribedValue = rs.getString("toBePrescribed");
+                if (toBePrescribedValue != null && "T".equalsIgnoreCase(toBePrescribedValue.trim())) {
                     statusVar = 1; // Set to 1 if value is 'T'
                 }
             }
@@ -145,6 +145,7 @@ public class PrescriptionsDB {
     
         return statusVar; 
     }
+    
     
     
 

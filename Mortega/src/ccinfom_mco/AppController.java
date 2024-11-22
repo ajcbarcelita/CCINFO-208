@@ -567,7 +567,7 @@ public class AppController {
 
 					int pcNum = rp.physician_cp_report();
 					if (pcNum >= 0) {
-						System.out.println("Number of Patient Case Handled: ");
+						System.out.println("Number of Patient Case Handled: " + pcNum);
 					}
 				}
 				else {
@@ -575,21 +575,12 @@ public class AppController {
 				}
 			}
 			else {
-				System.out.print("BHW First Name: ");
-				rp.bhw_firstName = sc.next();
-
-				System.out.print("BHW Last Name: ");
-				rp.bhw_lastName = sc.next();
-
-				System.out.print("BHW Middle Name: ");
-				rp.bhw_middleName = sc.next();
-
-				System.out.print("BHW Barangay: ");
-				rp.bhw_firstName = sc.next();
+				System.out.print("BHW ID Number: ");
+				rp.bhwID = sc.nextInt();
 
 				int pcNum = rp.bhw_cp_report();
 				if (pcNum >= 0) {
-					System.out.println("Number of Patient Case Handled: ");
+					System.out.println("Number of Patient Case Handled: " + pcNum);
 				}
 			}
 		}

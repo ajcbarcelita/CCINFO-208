@@ -15,6 +15,7 @@ public class Report {
         public String bhw_lastName;
         public String bhw_middleName;
         public String bhw_barangay;
+        public int bhwID;
         public int physicianPRCNo;
         public int month;
         public int year;
@@ -24,6 +25,7 @@ public class Report {
                 this.bhw_lastName = "";
                 this.bhw_middleName = "";
                 this.bhw_barangay = "";
+                this.bhwID = 0;
                 this.physicianPRCNo = 0;
                 this.month = 1;
                 this.year = 2024;
@@ -88,7 +90,7 @@ public class Report {
                 String query = """
                 SELECT COUNT(*) AS case_count 
                 FROM patient_case 
-                WHERE bhwID = ? 
+                WHERE involved_bhw = ? 
                 AND MONTH(start_date) = ? 
                 AND YEAR(start_date) = ?
                 """;
@@ -98,12 +100,6 @@ public class Report {
                 ResultSet rs = null;
 
                 try {
-                // get BHW ID 
-                int bhwID = getBHWID();
-                if (bhwID <= 0) {
-                        System.out.println("Invalid BHW details provided.");
-                        return 0;
-                }
 
                 conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 
