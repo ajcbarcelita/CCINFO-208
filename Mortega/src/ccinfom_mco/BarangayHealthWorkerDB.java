@@ -61,7 +61,7 @@ public class BarangayHealthWorkerDB {
 
                 try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        int generatedId = generatedKeys.getInt(5);
+                        int generatedId = generatedKeys.getInt(1);
                         System.out.println("The ID assigned to the BHW is: " + generatedId);
                     }
                 }
