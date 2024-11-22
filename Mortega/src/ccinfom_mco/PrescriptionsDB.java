@@ -28,7 +28,7 @@ public class PrescriptionsDB {
     //constructor
     public PrescriptionsDB(){
         this.prescriptionSerialNumber = "";
-        this.patientCaseID = 0; //not auto incremented. inputted
+        this.patientCaseID = 0;
         this.physicianPRCLicNumber = 0;
         this.date = null; 
     }
