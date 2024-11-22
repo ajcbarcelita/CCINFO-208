@@ -132,34 +132,39 @@ public class BarangayHealthWorkerDB {
 	//updates existing bhw record
 	//returns 1 if successful. 0, otherwise
 	public int update_bhw_record() {
-
-        StringBuilder sql = new StringBuilder("UPDATE bhw SET ");
-        boolean isFirstField = true;
+        // Debug: Print the current state of fields
+        System.out.println("Debug: bhw_firstName = " + bhw_firstName);
+        System.out.println("Debug: barangayAssignedTo = " + barangayAssignedTo);
     
+        StringBuilder sql = new StringBuilder("UPDATE bhw SET ");
+        boolean hasValidField = false;
+    
+        // Dynamically build the SQL query
         if (bhw_lastName != null && !bhw_lastName.equalsIgnoreCase("N/A")) {
             sql.append("lastname = ?");
-            isFirstField = false;
+            hasValidField = true;
         }
         if (bhw_firstName != null && !bhw_firstName.equalsIgnoreCase("N/A")) {
-            if (!isFirstField) sql.append(", ");
+            if (hasValidField) sql.append(", ");
             sql.append("firstname = ?");
-            isFirstField = false;
+            hasValidField = true;
         }
         if (bhw_middleName != null && !bhw_middleName.equalsIgnoreCase("N/A")) {
-            if (!isFirstField) sql.append(", ");
+            if (hasValidField) sql.append(", ");
             sql.append("middlename = ?");
-            isFirstField = false;
+            hasValidField = true;
         }
         if (barangayAssignedTo != null && !barangayAssignedTo.equalsIgnoreCase("N/A")) {
-            if (!isFirstField) sql.append(", ");
+            if (hasValidField) sql.append(", ");
             sql.append("barangay_assignedto = ?");
+            hasValidField = true;
         }
     
         // Add WHERE clause
         sql.append(" WHERE bhwID = ?");
     
         // If no fields to update
-        if (isFirstField) {
+        if (!hasValidField) {
             System.out.println("No valid fields to update for BHW ID: " + bhwID);
             return 0;
         }
@@ -181,10 +186,12 @@ public class BarangayHealthWorkerDB {
                 pstmt.setString(parameterIndex++, bhw_middleName);
             }
             if (barangayAssignedTo != null && !barangayAssignedTo.equalsIgnoreCase("N/A")) {
-                pstmt.setInt(parameterIndex++, getBrgyNo(barangayAssignedTo)); // Converts valid barangay name to an ID
+                int barangayID = getBrgyNo(barangayAssignedTo);
+                System.out.println("Debug: Resolved barangay ID = " + barangayID); // Debug output
+                pstmt.setInt(parameterIndex++, barangayID);
             }
     
-            pstmt.setInt(parameterIndex, bhwID); // Set BHW ID for the WHERE clause
+            pstmt.setInt(parameterIndex, bhwID); // Set BHW ID for WHERE clause
     
             // Execute update
             int rowsUpdated = pstmt.executeUpdate();
@@ -200,6 +207,7 @@ public class BarangayHealthWorkerDB {
             return 0;
         }
     }
+    
     
 
 	//deletes bhw row given bhw ID

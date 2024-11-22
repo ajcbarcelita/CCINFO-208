@@ -176,22 +176,13 @@ public class AppController {
 
 			System.out.println("Type N/A if the field will not be updated\n");
 			System.out.print("First Name: "); 
-			bhwData[0] = sc.next();
-			if (bhwData[0] != "N/A") {
-				bhwdb.bhw_firstName = bhwData[1];
-			}
+			bhwdb.bhw_firstName = sc.next();
 
 			System.out.print("Last Name: "); 
-			bhwData[1] = sc.next();
-			if (bhwData[1] != "N/A") {
-				bhwdb.bhw_lastName = bhwData[1];
-			}
+			bhwdb.bhw_lastName = sc.next();
 			
 			System.out.print("Middle Name: "); 
-			bhwData[2] = sc.next();
-			if (bhwData[2] != "N/A") {
-				bhwdb.bhw_middleName = bhwData[2];
-			}
+			bhwdb.bhw_middleName = sc.next();
 
 			System.out.print("Barangay: "); 
 			do {
@@ -208,9 +199,9 @@ public class AppController {
 			}
 			while (BarangayHealthWorkerDB.getBrgyNo(bhwData[3]) == -1);
 
-			if (bhwData[3] != "N/A") {
-				bhwdb.barangayAssignedTo = bhwData[4]; 
-			}
+			
+			bhwdb.barangayAssignedTo = bhwData[3]; 
+			
 
 			System.out.println("=======================================================");
 			System.out.println("Updating Database...");
