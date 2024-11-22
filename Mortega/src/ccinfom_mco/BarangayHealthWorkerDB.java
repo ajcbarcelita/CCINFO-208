@@ -50,9 +50,9 @@ public class BarangayHealthWorkerDB {
 			
 			//BHW_ID is auto-incremented
 			pstmt.setString(1, bhw_lastName);
-			pstmt.setString(1, bhw_firstName);
-			pstmt.setString(1, bhw_middleName);
-			pstmt.setInt(1, getBrgyNo(barangayAssignedTo)); //we already made sure in the controller that the input for the barangay will always be storage valid for the database
+			pstmt.setString(2, bhw_firstName);
+			pstmt.setString(3, bhw_middleName);
+			pstmt.setInt(4, getBrgyNo(barangayAssignedTo)); //we already made sure in the controller that the input for the barangay will always be storage valid for the database
 			System.out.println("SQL Statement Prepared");
 
 			int rowsInserted = pstmt.executeUpdate();
@@ -61,7 +61,7 @@ public class BarangayHealthWorkerDB {
 
                 try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        int generatedId = generatedKeys.getInt(1);
+                        int generatedId = generatedKeys.getInt(5);
                         System.out.println("The ID assigned to the BHW is: " + generatedId);
                     }
                 }
