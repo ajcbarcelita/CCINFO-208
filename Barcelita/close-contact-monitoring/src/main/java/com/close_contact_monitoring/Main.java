@@ -10,8 +10,9 @@ public class Main {
 	//why make DAOs as attributes of main?
 	private Scanner sc;
 	private PatientDAO patientDAO;
-	// private AddressDAO addressDAO;
-	// private CloseContactDAO barangayDAO;
+	private AddressDAO addressDAO;
+	private CloseContactDAO barangayDAO;
+	private ComorbidityDAO comorbidityDAO;
 
 	// ANSI escape codes for text colors
     public static final String RESET = "\033[0m";      // Reset color
@@ -20,9 +21,12 @@ public class Main {
 	public static final String ORANGE = "\033[38;5;214m"; // Orange 
     public static final String BLUE = "\033[0;34m";   // Blue
 
-	public Main(PatientDAO patientDAO, AddressDAO addressDAO, CloseContactDAO barangayDAO) {
+	public Main(PatientDAO patientDAO, AddressDAO addressDAO, CloseContactDAO barangayDAO, ComorbidityDAO comorbidityDAO) {
 		this.sc = new Scanner(System.in);
 		this.patientDAO = patientDAO;
+		this.addressDAO = addressDAO;
+		this.barangayDAO = barangayDAO;
+		this.comorbidityDAO = comorbidityDAO;
 		// this.addressDAO = addressDAO;
 		// this.barangayDAO = barangayDAO;
 	}
@@ -40,13 +44,14 @@ public class Main {
 			System.out.println("[6] View Guardian/s of Patient Record.");
 			System.out.println("[7] Delete a Guardian of Patient Record.\n");
             System.out.println("[8] Add Comorbidity to Patient Record.");
-            System.out.println("[9] View Comorbidities of Patient Record.");
-			System.out.println("[10] Delete a Comorbidity of Patient Record.\n");
-            System.out.println("[11] Add Patient TB Case to Patient Record.");
-			System.out.println("[12] View Patient TB Cases of Patient Record.");
-			System.out.println("[13] (Soft) Delete a Patient TB Case of Patient Record.\n");
-			System.out.println("[14] View a Patient Record and All Associated Records.");
-			System.out.println("[15] Back to Main Menu.");
+			System.out.println("[9] Add Comorbidity to Reference Table.");
+            System.out.println("[10] View Comorbidities of Patient Record.");
+			System.out.println("[11] Delete a Comorbidity of Patient Record.\n");
+            System.out.println("[12] Add Patient TB Case to Patient Record.");
+			System.out.println("[13] View Patient TB Cases of Patient Record.");
+			System.out.println("[14] (Soft) Delete a Patient TB Case of Patient Record.\n");
+			System.out.println("[15] View a Patient Record and All Associated Records.");
+			System.out.println("[16] Back to Main Menu.");
             System.out.print("Enter choice: ");
             int choice = sc.nextInt();
             sc.nextLine(); // Consume newline
@@ -81,7 +86,7 @@ public class Main {
 					break;
 				case 4:
 					// Add your code for (soft) deleting a patient record here
-					System.out.println("(Soft) Delete Patient Record selected.");
+					System.out.println("(Soft) Delete Patient Record selected. - WIP");
 					break;
 				case 5:
 					// Add your code for adding a guardian to a patient record here
@@ -93,37 +98,45 @@ public class Main {
 					break;
 				case 7:
 					// Add your code for deleting a guardian of a patient record here
-					System.out.println("Delete a Guardian of Patient Record selected.");
+					System.out.println("Delete a Guardian of Patient Record selected. - WIP");
 					break;
 				case 8:
 					// Add your code for adding a comorbidity to a patient record here
 					System.out.println("Add Comorbidity to Patient Record selected.");
+					comorbidityDAO.addComorbidityToPatientRecord();
 					break;
 				case 9:
-					// Add your code for viewing comorbidities of a patient record here
-					System.out.println("View Comorbidities of Patient Record selected.");
+					// Add your code for adding a comorbidity to the reference table here
+					System.out.println(ORANGE + "\nAdd Comorbidity to Reference Table selected.\n" + RESET);
+					comorbidityDAO.addComorbidityToRefTable();
 					break;
 				case 10:
-					// Add your code for deleting a comorbidity of a patient record here
-					System.out.println("Delete a Comorbidity of Patient Record selected.");
+					// Add your code for viewing comorbidities of a patient record here
+					System.out.println("\nView Comorbidities of Patient Record selected.\n");
+					patientID = InputUtility.getIntInput("Enter Patient ID: ");
+					comorbidityDAO.viewComorbiditiesByPatientID(patientID);
 					break;
 				case 11:
+					// Add your code for deleting a comorbidity of a patient record here
+					System.out.println("Delete a Comorbidity of Patient Record selected. - WIP");
+					break;
+				case 12:
 					// Add your code for adding a patient TB case to a patient record here
 					System.out.println("Add Patient TB Case to Patient Record selected.");
 					break;
-				case 12:
+				case 13:
 					// Add your code for viewing patient TB cases of a patient record here
 					System.out.println("View Patient TB Cases of Patient Record selected.");
 					break;
-				case 13:
-					// Add your code for (soft) deleting a patient TB case of a patient record here
-					System.out.println("(Soft) Delete a Patient TB Case of Patient Record selected.");
-					break;
 				case 14:
+					// Add your code for (soft) deleting a patient TB case of a patient record here
+					System.out.println("(Soft) Delete a Patient TB Case of Patient Record selected. - WIP");
+					break;
+				case 15:
 					// Add your code for viewing a patient record and all associated records here
 					System.out.println("View a Patient Record and All Associated Records selected.");
 					break;
-				case 15:
+				case 16:
 					exitSubMenu = true;
             }
         }
@@ -259,8 +272,9 @@ public class Main {
 		PatientDAO patientDAO = new PatientDAO(connection);
 		AddressDAO addressDAO = new AddressDAO(connection);
 		CloseContactDAO barangayDAO = new CloseContactDAO(connection);
+		ComorbidityDAO comorbidityDAO = new ComorbidityDAO(connection);
 
-		Main app = new Main(patientDAO, addressDAO, barangayDAO);
+		Main app = new Main(patientDAO, addressDAO, barangayDAO, comorbidityDAO);
 		app.run(connection);
 	}
 }
