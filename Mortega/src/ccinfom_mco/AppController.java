@@ -443,48 +443,51 @@ public class AppController {
 
 	
 	public static void viewPrescription(Scanner sc) {
-		PrescriptionsDB pdb = new PrescriptionsDB();
-		int caseno = 0;
-		String prtnSerialNo = "";
+    PrescriptionsDB pdb = new PrescriptionsDB();
+    int caseno = 0;
+    String prtnSerialNo = "";
 
-		System.out.println("  ");
-		System.out.println("  ");
-		System.out.println("=======================================================");
-		System.out.println("            View Existing Prescription               ");
-		System.out.println("-------------------------------------------------------");
-		System.out.print("Patient Case Number:"); 
-		caseno = sc.nextInt();  // Identifier
+    System.out.println("\n\n=======================================================");
+    System.out.println("            View Existing Prescription               ");
+    System.out.println("-------------------------------------------------------");
+    
+    // Get the Patient Case Number
+    System.out.print("Patient Case Number: "); 
+    caseno = sc.nextInt();  // Patient case number as identifier
+    
+    // Check if case number exists
+    if (PrescriptionsDB.checkCaseNo(caseno) == 1) {
+        pdb.patientCaseID = caseno;
 
-		if (PrescriptionsDB.checkCaseNo(caseno) == 1) {
-			pdb.patientCaseID = caseno;
-			
-			System.out.print("Prescription Serial Number:"); 
-			prtnSerialNo = sc.next(); 
-			do {
-				prtnSerialNo = sc.next(); 
-			}
-			while (prtnSerialNo.length() < 12);
+        // Get the Prescription Serial Number, ensuring it is valid
+        System.out.print("Prescription Serial Number: "); 
+        prtnSerialNo = sc.next(); 
+        while (prtnSerialNo.length() < 12) {
+            System.out.println("Please enter a valid serial number (12 characters minimum).");
+            System.out.print("Prescription Serial Number: "); 
+            prtnSerialNo = sc.next(); 
+        }
 
-			pdb.prescriptionSerialNumber = prtnSerialNo;
-			
-			System.out.println("=======================================================");
-			System.out.println("Processing Data...");
+        pdb.prescriptionSerialNumber = prtnSerialNo;
 
-			pdb.view_prescriptions();
-		}
-		else {
-			System.out.println("=======================================================");
-			System.out.println("Patient Case Number does not exist!");
-		}
-	}
-	
+        // Process the prescription data
+        System.out.println("=======================================================");
+        System.out.println("Processing Data...");
+
+        pdb.view_prescriptions();  // Assuming this method prints the prescription details
+    } else {
+        System.out.println("=======================================================");
+        System.out.println("Patient Case Number does not exist!");
+    }
+}
+
 	
 
 	public static int deletePrescription(Scanner sc) {
 		PrescriptionsDB pdb = new PrescriptionsDB();
 		int caseno = 0;
 		String prtnSerialNo = "";
-
+	
 		System.out.println("  ");
 		System.out.println("  ");
 		System.out.println("=======================================================");
@@ -492,22 +495,25 @@ public class AppController {
 		System.out.println("-------------------------------------------------------");
 		System.out.print("Patient Case Number:"); 
 		caseno = sc.nextInt();  // Identifier
-
+	
 		if (PrescriptionsDB.checkCaseNo(caseno) == 1) {
 			pdb.patientCaseID = caseno;
-
+	
 			System.out.print("Prescription Serial Number:"); 
-			prtnSerialNo = sc.next(); 
-			do {
-				prtnSerialNo = sc.next(); 
+			prtnSerialNo = sc.next();  // Get the serial number input
+	
+			// Validate the serial number length
+			while (prtnSerialNo.length() < 12) {
+				System.out.println("Please enter a valid serial number!");
+				System.out.print("Prescription Serial Number:"); 
+				prtnSerialNo = sc.next(); // Prompt again if invalid length
 			}
-			while (prtnSerialNo.length() < 12);
-
+	
 			pdb.prescriptionSerialNumber = prtnSerialNo;
-			
+	
 			System.out.println("=======================================================");
 			System.out.println("Processing Data...");
-
+	
 			return pdb.delete_prescriptions();
 		}
 		else {
@@ -515,8 +521,8 @@ public class AppController {
 			System.out.println("Patient Case Number does not exist!");
 			return 0;
 		}
-	}	
-
+	}
+	
 	
 
 	public static void cpr_controller(Scanner sc) {
