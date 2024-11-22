@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.InputMismatchException;
 
 public class AppController {
 
@@ -347,72 +348,90 @@ public class AppController {
 				}
 			}
 			while (pdb.prescriptionSerialNumber.length() != 12);
-
-			System.out.print("Prescription Issue Date (dd-mm-yyyy):"); 
-			String date_issue = sc.next();
-
-			try {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-				Date parsedDate = dateFormat.parse(date_issue);
-
-				java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
-
-				pdb.date = sqlDate;
-			} catch (ParseException e) {
-				System.out.println("Failed to parse date: " + e.getMessage());
-			}
 		
 			System.out.print("Number of Prescriptions:"); 
+			nMed = sc.nextInt(); 
+
 			while(nMed < 0) {
 				System.out.println("Please enter an integer greater than 0\n");
 				System.out.print("Number of Prescriptions:");
 				nMed = sc.nextInt(); 
 			}
 		
-			String[] medData = new String[nMed];    // Medicine Name (Generic Name)
-			int[][] qdf_ds = new int[nMed][3];      // Medicine Quantity, Dosage, Frequency
-			double[] dosage = new double[nMed];
+			// Initialize data structures
+			String[] medData = new String[nMed];       // Medicine Names (Generic Names)
+			double[] dosage = new double[nMed];        // Dosage (mg/kg)
+			int[][] qdf_ds = new int[nMed][2];         // Frequency and Duration (per day, in weeks)
+
+			// Fill default values
 			Arrays.fill(medData, null);
 			Arrays.fill(dosage, 0.0);
-		
-			for (int i = 0; i < nMed; i++) {  		// Initialization
-				Arrays.fill(qdf_ds[i], -1);
+			for (int i = 0; i < nMed; i++) {
+				Arrays.fill(qdf_ds[i], -1);            // Initialize frequency and duration to invalid values
 			}
-		
-			for(int i = 0; i < nMed; i++) {
-				int y = i + 1;
-				System.out.print("Medicine # " + y + " Name: ");  
-				do {
+
+			// Medicine input loop
+			for (int i = 0; i < nMed; i++) {
+				int medNumber = i + 1;  // Dynamic numbering starts from 1
+				System.out.println("----------------------------------------------------");
+				System.out.println("Input details for Medicine #" + medNumber);
+				
+				// Get valid medicine name
+				while (true) {
+					System.out.print("Medicine Name: ");
 					medData[i] = sc.next();
-
 					if (PrescriptionsDB.checkMedicine(medData[i]) == 0) {
-						System.out.println("Please input a valid generic medicine name!");
-						System.out.print("Medicine # " + y + " Name: ");
-					}
-				} 
-				while(PrescriptionsDB.checkMedicine(medData[i]) == 0); //medicine does not exist
-
-
-				pdb.prescriptionNames.add(medData[i]);
-		
-				while(qdf_ds[i][0] < 0 || qdf_ds[i][1] < 0 || qdf_ds[i][2] < 0) { 
-					System.out.print("Medicine # " + y + "Dosage (mg/kg): ");  
-					dosage[i] = sc.nextInt();
-
-					System.out.print("Medicine # " + y + " Frequency (Per Day): ");  
-					qdf_ds[i][1] = sc.nextInt();
-
-					System.out.print("Medicine # " + y + " Intake Duration: ");  
-					qdf_ds[i][2] = sc.nextInt();
-		
-					if (qdf_ds[i][0] < 0 || qdf_ds[i][1] < 0 || qdf_ds[i][2] < 0) {
-						System.out.println("Please enter non-negative values for Dosage, Frequency, and Intake Duration.");
+						System.out.println("Invalid medicine name. Please input a valid generic name.");
+					} else {
+						break;
 					}
 				}
+				pdb.prescriptionNames.add(medData[i]);  // Add valid medicine name to the list
+
+				// Get valid dosage, frequency, and duration
+				while (true) {
+					try {
+						System.out.print("Dosage (mg/kg): ");
+						dosage[i] = sc.nextDouble();
+
+						System.out.print("Frequency (times per day): ");
+						qdf_ds[i][0] = sc.nextInt();
+
+						System.out.print("Duration (in weeks): ");
+						qdf_ds[i][1] = sc.nextInt();
+
+						// Validate inputs
+						if (dosage[i] <= 0 || qdf_ds[i][0] <= 0 || qdf_ds[i][1] <= 0) {
+							System.out.println("All values must be positive numbers. Please try again.");
+						} else {
+							break;
+						}
+					} catch (InputMismatchException e) {
+						System.out.println("Invalid input. Please enter numeric values.");
+						sc.nextLine();  // Clear the invalid input
+					}
+				}
+
+				// Add valid data to PrescriptionDB
 				pdb.dosage.add(dosage[i]);
-				pdb.frequency.add(qdf_ds[i][1]);
-				pdb.frequency.add(qdf_ds[i][2]);
+				pdb.frequency.add(qdf_ds[i][0]);
+				pdb.duration.add(qdf_ds[i][1]);
 			}
+
+			// Handle date parsing and setting
+			try {
+				System.out.print("Prescription Issue Date (dd-mm-yyyy):"); 
+				String dateInput = sc.next();  // Read date input from user
+				SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+				Date parsedDate = dateFormat.parse(dateInput);
+
+				java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
+				pdb.date = sqlDate;
+				System.out.println("Date successfully parsed and added: " + sqlDate);
+			} catch (ParseException e) {
+				System.out.println("Failed to parse date: " + e.getMessage());
+			}
+
 
 			System.out.println("=======================================================");
 			System.out.println("Processing Rx...");
@@ -424,7 +443,7 @@ public class AppController {
 			System.out.println("Patient Case Number does not exist!");
 		}
 		else {
-			System.out.println("Patient cannot be prescribed! \nPlease wait for the patient's health assessment!");
+			System.out.println("Patient cannot be prescribed!");
 		}
 		return 0;
 	}

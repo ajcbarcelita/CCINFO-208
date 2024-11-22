@@ -213,7 +213,7 @@ public int submit_prescriptions() {
         conn.setAutoCommit(false);
 
         // insert prescription into prescription table
-        String insertPrescriptionSQL = "INSERT INTO prescription (prescription_serialno, caseno, date_given) VALUES (?, ?, ?, ?)";
+        String insertPrescriptionSQL = "INSERT INTO prescription (prescription_serialno, caseno, date_given) VALUES (?, ?, ?)";
         insertPrescription = conn.prepareStatement(insertPrescriptionSQL);
         insertPrescription.setString(1, prescriptionSerialNumber);
         insertPrescription.setInt(2, patientCaseID);
@@ -222,7 +222,7 @@ public int submit_prescriptions() {
         insertPrescription.executeUpdate();
 
         // insert medicines into prescription_medicine table
-        String insertMedicineSQL = "INSERT INTO prescription_medicine (prescription_serialno, generic_name, dosage, dose_frequency, duration) VALUES (?, ?, ?, ?, ?)";
+        String insertMedicineSQL = "INSERT INTO prescription_medicine (prescription_serialno, generic_name, dosage, dosefrequency_per_day, duration_days) VALUES (?, ?, ?, ?, ?)";
         insertMedicine = conn.prepareStatement(insertMedicineSQL);
 
         for (int i = 0; i < prescriptionNames.size(); i++) {
