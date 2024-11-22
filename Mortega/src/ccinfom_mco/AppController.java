@@ -172,6 +172,7 @@ public class AppController {
 		
 		//sql check ID, if exist
 		if (BarangayHealthWorkerDB.checkBhwId(bhwid) == 1) {
+			bhwdb.bhwID = bhwid;
 
 			System.out.println("Type N/A if the field will not be updated\n");
 			System.out.print("First Name: "); 
@@ -211,19 +212,6 @@ public class AppController {
 				bhwdb.barangayAssignedTo = bhwData[4]; 
 			}
 
-
-			// Validate Activeness Status
-			while (true) {
-				System.out.print("Activeness Status (A - Active, N - Inactive): ");
-				bhwData[4] = sc.next();
-				
-				if (bhwData[4].equals("A") || bhwData[4].equals("N") || bhwData[4].equals("N/A")) {
-					bhwdb.bhw_isActive = bhwData[5];
-					break;  
-				} else {
-					System.out.println("Please enter a valid input! ('A', 'N', or 'N/A')");
-				}
-			}
 			System.out.println("=======================================================");
 			System.out.println("Updating Database...");
 			return bhwdb.update_bhw_record();
@@ -284,6 +272,7 @@ public class AppController {
 			System.out.println("Processing Data...");
 			BHW bhw = bhwdb.view_bhw_record(); 
 			bhw.printBHWRecord();
+			System.out.println("=======================================================");
 		}
 		else {
 			System.out.println("=======================================================");
@@ -444,7 +433,7 @@ public class AppController {
 			System.out.println("Patient Case Number does not exist!");
 		}
 		else {
-			System.out.println("Patient cannot be prescrbed! \n Please wait for the patient's health assessment!");
+			System.out.println("Patient cannot be prescrbed! \nPlease wait for the patient's health assessment!");
 		}
 		return 0;
 	}

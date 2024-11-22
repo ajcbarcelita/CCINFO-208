@@ -94,7 +94,7 @@ public class PrescriptionsDB {
     //checks if the patient_case ID exists
     //returns 1, if it exists. 0, otherwise
     public static int checkCaseNo(int caseno) {
-        String sql = "SELECT 1 FROM patient_case WHERE caseno = ?";
+        String sql = "SELECT 1 FROM patient_case WHERE patientcaseno = ?";
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -122,31 +122,31 @@ public class PrescriptionsDB {
      * 
      * returns 0, otherwise
      */
-    public static int toBePrescribed(int caseno) {
-        String sql = "SELECT toBePrescribed FROM patient_case WHERE caseno = ?";
-
+    public static int toBePrescribedStatus(int caseno) {
+        String sql = "SELECT toBePrescribed FROM patient_case WHERE patientcaseno = ?";
+        int statusVar = 0; // Default to 0 (F)
+    
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, caseno);
+    
+            pstmt.setInt(1, caseno); // Bind the case number to the query
             ResultSet rs = pstmt.executeQuery();
-
+    
             if (rs.next()) {
-                String toBePrescribedValue = rs.getString("toBePrescribed");
-                if ("F".equalsIgnoreCase(toBePrescribedValue)) {
-                    return 1; // toBePrescribed is 'Y'
-                } else if ("N".equalsIgnoreCase(toBePrescribedValue)) {
-                    return 0; // toBePrescribed is 'N'
+                String toBePrescribedValue = rs.getString("toBePrescribed").trim(); // Trim any spaces
+                if ("T".equalsIgnoreCase(toBePrescribedValue)) {
+                    statusVar = 1; // Set to 1 if value is 'T'
                 }
             }
-
+    
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return 0; // Default return value if no record is found or if the value is not 'Y' or 'N'
+    
+        return statusVar; 
     }
-
+    
+    
 
 
     // Method to check if a prescription exists using the prescription serial number

@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
 public class BarangayHealthWorkerDB {
@@ -41,24 +42,27 @@ public class BarangayHealthWorkerDB {
 	}
  
 	public int create_bhw_record() {
-		String sql = "INSERT INTO bhw (bhwID, lastname, firstname, middlename, barangay_assignedto) VALUES (?, ?, ?, ?, ?)";
-
-		try {
-			Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-			System.out.println("Connection to DB Successful");
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			
-			//BHW_ID is auto-incremented
-			pstmt.setString(1, bhw_lastName);
-			pstmt.setString(2, bhw_firstName);
-			pstmt.setString(3, bhw_middleName);
-			pstmt.setInt(4, getBrgyNo(barangayAssignedTo)); //we already made sure in the controller that the input for the barangay will always be storage valid for the database
-			System.out.println("SQL Statement Prepared");
-
-			int rowsInserted = pstmt.executeUpdate();
+        String sql = "INSERT INTO bhw (lastname, firstname, middlename, barangay_assignedto) VALUES (?, ?, ?, ?)";
+    
+        try (
+            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+            System.out.println("Connection to DB Successful");
+    
+            // Set parameters for the prepared statement
+            pstmt.setString(1, bhw_lastName);
+            pstmt.setString(2, bhw_firstName);
+            pstmt.setString(3, bhw_middleName);
+            pstmt.setInt(4, getBrgyNo(barangayAssignedTo)); // Assumes input is validated in the controller
+            
+            System.out.println("SQL Statement Prepared");
+    
+            int rowsInserted = pstmt.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.println("A new BHW was inserted successfully!");
-
+    
+                // Retrieve the auto-generated BHWID
                 try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         int generatedId = generatedKeys.getInt(1);
@@ -66,16 +70,14 @@ public class BarangayHealthWorkerDB {
                     }
                 }
             }
-
-			pstmt.close();
-			conn.close();
-			return 1;
-
-		} catch (SQLException e) {
+            return 1;
+    
+        } catch (SQLException e) {
             e.printStackTrace();
-			return 0;
-		}
-	}
+            return 0;
+        }
+    }
+    
 
 	public BHW view_bhw_record() {
 		String sql = "SELECT bhwID, lastname, firstname, middlename, barangay_assignedto FROM bhw WHERE bhwID = ?";
@@ -130,55 +132,61 @@ public class BarangayHealthWorkerDB {
 	//updates existing bhw record
 	//returns 1 if successful. 0, otherwise
 	public int update_bhw_record() {
+
         StringBuilder sql = new StringBuilder("UPDATE bhw SET ");
         boolean isFirstField = true;
-
-        if (bhw_lastName != null) {
+    
+        if (bhw_lastName != null && !bhw_lastName.equalsIgnoreCase("N/A")) {
             sql.append("lastname = ?");
             isFirstField = false;
         }
-        if (bhw_firstName != null) {
+        if (bhw_firstName != null && !bhw_firstName.equalsIgnoreCase("N/A")) {
             if (!isFirstField) sql.append(", ");
             sql.append("firstname = ?");
             isFirstField = false;
         }
-        if (bhw_middleName != null) {
+        if (bhw_middleName != null && !bhw_middleName.equalsIgnoreCase("N/A")) {
             if (!isFirstField) sql.append(", ");
             sql.append("middlename = ?");
             isFirstField = false;
         }
-        if (barangayAssignedTo != null) { 
+        if (barangayAssignedTo != null && !barangayAssignedTo.equalsIgnoreCase("N/A")) {
             if (!isFirstField) sql.append(", ");
             sql.append("barangay_assignedto = ?");
         }
-
+    
+        // Add WHERE clause
         sql.append(" WHERE bhwID = ?");
-
+    
+        // If no fields to update
         if (isFirstField) {
-            System.out.println("No fields to update for BHW ID: " + bhwID);
+            System.out.println("No valid fields to update for BHW ID: " + bhwID);
             return 0;
         }
-
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
-
+    
+        try (
+            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            PreparedStatement pstmt = conn.prepareStatement(sql.toString())
+        ) {
             int parameterIndex = 1;
-
-            if (bhw_lastName != null) {
+    
+            // Set dynamic parameters
+            if (bhw_lastName != null && !bhw_lastName.equalsIgnoreCase("N/A")) {
                 pstmt.setString(parameterIndex++, bhw_lastName);
             }
-            if (bhw_firstName != null) {
+            if (bhw_firstName != null && !bhw_firstName.equalsIgnoreCase("N/A")) {
                 pstmt.setString(parameterIndex++, bhw_firstName);
             }
-            if (bhw_middleName != null) {
+            if (bhw_middleName != null && !bhw_middleName.equalsIgnoreCase("N/A")) {
                 pstmt.setString(parameterIndex++, bhw_middleName);
             }
-            if (barangayAssignedTo != null) {
-                pstmt.setInt(parameterIndex++, getBrgyNo(barangayAssignedTo)); //if N/A, will not be updated
+            if (barangayAssignedTo != null && !barangayAssignedTo.equalsIgnoreCase("N/A")) {
+                pstmt.setInt(parameterIndex++, getBrgyNo(barangayAssignedTo)); // Converts valid barangay name to an ID
             }
-
-            pstmt.setInt(parameterIndex, bhwID);
-
+    
+            pstmt.setInt(parameterIndex, bhwID); // Set BHW ID for the WHERE clause
+    
+            // Execute update
             int rowsUpdated = pstmt.executeUpdate();
             if (rowsUpdated > 0) {
                 System.out.println("BHW record updated successfully for BHW ID: " + bhwID);
@@ -186,13 +194,13 @@ public class BarangayHealthWorkerDB {
                 System.out.println("No BHW record found with BHW ID: " + bhwID);
             }
             return rowsUpdated;
-
+    
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
         }
-	}
-
+    }
+    
 
 	//deletes bhw row given bhw ID
 	//returns 1 if successful, 0 otherwise
@@ -242,5 +250,32 @@ public class BarangayHealthWorkerDB {
             return -1; // Return -1 in case of an error/no barangay found
         }
 	} 
+
+
+    public static String getBrgyName(int brgyID) {
+        String sql = "SELECT barangayName FROM barangay WHERE barangayID = ?";
+        String barangayName = null;
+    
+        try (
+            Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+            pstmt.setInt(1, brgyID); // Set the barangayID parameter
+    
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    barangayName = rs.getString("barangayName"); // Retrieve the barangayName
+                } else {
+                    System.out.println("No barangay found with ID: " + brgyID);
+                }
+            }
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return barangayName; // Return the barangay name or null if not found
+    }
+    
 }
 

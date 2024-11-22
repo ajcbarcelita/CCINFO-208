@@ -46,7 +46,7 @@ public class BHW {
         System.out.println("BHW Record:");
         System.out.println("BHW ID: " + bhwID);
         System.out.println("Name: " + lastname + ", " + firstname + " " + middlename);
-        System.out.println("Barangay Assigned To: " + barangayAssignedTo);
+        System.out.println("Barangay Assigned To: " + BarangayHealthWorkerDB.getBrgyName(barangayAssignedTo));
     }
 }
 
