@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.close_contact_monitoring","l":"Main"},{"p":"com.close_contact_monitoring.utility","l":"MySQLConnection"}];updateSearchResults();
