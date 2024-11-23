@@ -9,9 +9,10 @@ import java.sql.SQLException;
  * 	Provides methods to start and close connections to specified MySQL database.
  */
 public class MySQLConnection {
-	private static final String DB_URL = "jdbc:mysql://localhost:3306/ccinfo208db?useSSL=false&serverTimezone=UTC"; //this uses db on my local machine
-	private static final String DB_USERNAME = "root";
-	private static final String DB_PW = "Frieren.#6950";
+	private static final String DB_URL = "jdbc:mysql://153.92.15.3:3306/u400425564_ccinfo208db?autoReconnect=true&useSSL=false&serverTimezone=UTC"; //this uses db on the Hostinger website
+	private static final String DB_USERNAME = "u400425564_root";
+	private static final String DB_PW = "DLSUm1234!";
+	private static DatabaseKeepAlive keepAlive;
 
 	// ANSI escape codes for color formatting
 	public static final String RESET = "\033[0m";  // Reset color
@@ -27,6 +28,8 @@ public class MySQLConnection {
 	public static Connection getConnection() throws SQLException {
 		try {
 			Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PW);
+			keepAlive = new DatabaseKeepAlive(connection, 10000);
+			keepAlive.start();
 			System.out.println(GREEN + "Connection to CCINFO208DB established successfully." + RESET);
 			return connection;
 		} catch (SQLException e) {
@@ -41,14 +44,17 @@ public class MySQLConnection {
      * 	@param connection The connection to be closed.
      * 	@throws SQLException If an SQL error occurs during closing the connection.
      */
-	public static void closeConnection (Connection connection) {
-		if (connection != null) {
-			try {
-				connection.close();
-				System.out.println(GREEN + "Connection to CCINFO208DB closed successfully.\n" + RESET);
-			} catch (SQLException e){
-				System.err.println(RED + "Failed to close connection to CCINFO208DB: " + e.getMessage() + "\n" + RESET);
-			}
-		}
-	}
+    public static void closeConnection(Connection connection) {
+        if (connection != null) {
+            try {
+                if (keepAlive != null) {
+                    keepAlive.stop();
+                }
+                connection.close();
+                System.out.println(GREEN + "Connection to CCINFO208DB closed successfully.\n" + RESET);
+            } catch (SQLException e) {
+                System.err.println(RED + "Failed to close connection to CCINFO208DB: " + e.getMessage() + "\n" + RESET);
+            }
+        }
+    }
 }

@@ -9,6 +9,10 @@ public class Barangay {
         this.barangayName = barangayName;
     }
 
+    public Barangay() {
+
+    }
+
     public int getBarangayID() {
         return barangayID;
     }
