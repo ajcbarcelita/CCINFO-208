@@ -126,10 +126,8 @@ public class ManagePatientRecords {
                     System.out.print("Enter BCG Vaccination Status (Y/N): ");
                     char isBCGVaccinated = sc.next().charAt(0);
                     patients = patientDAO.getPatientsByBCGVaccinationStatus(isBCGVaccinated);
-                    for (Patient p : patients) {
-                        System.out.println();
-                        patientDAO.printPatientDetails(p);
-                    }
+					System.out.println();
+					patientDAO.printPatientsTable(patients);
                     break;
                 case 14:
                     // Add your code for listing patient records that are / are not elevated from close contacts here
@@ -142,10 +140,8 @@ public class ManagePatientRecords {
                         boolElevatedFromCloseContact = false;
                     }
                     patients = patientDAO.getPatientsByCloseContactStatus(boolElevatedFromCloseContact);
-                    for (Patient p : patients) {
-                        System.out.println();
-                        patientDAO.printPatientDetails(p);
-                    }
+                    System.out.println();
+                    patientDAO.printPatientsTable(patients);
                     break;
 				case 15:
 					exitSubMenu = true;

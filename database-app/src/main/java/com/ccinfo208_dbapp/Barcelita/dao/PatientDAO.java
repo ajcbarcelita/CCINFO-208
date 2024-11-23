@@ -38,9 +38,7 @@ public class PatientDAO {
             return;
         }
 
-        //Close contact case ID search is automatic, no need for user input, can be null
-        CloseContactDAO closeContactDAO = new CloseContactDAO(connection);
-        Integer closeContactCaseID = closeContactDAO.getCloseContactCaseID(lastname, firstname, middlename, birthdate, sex);
+        Integer closeContactCaseID = null;
 
         //Start insert operation
         String sql = "INSERT INTO patient (lastname, firstname, middlename, birthday, sex, is_bcg_vaccinated, addressID, closeContactCaseID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -52,11 +50,7 @@ public class PatientDAO {
             stmt.setString(5, String.valueOf(sex));
             stmt.setString(6, String.valueOf(is_bcg_vaccinated));
             stmt.setInt(7, addressID);
-            if (closeContactCaseID == null) {
-                stmt.setNull(8, Types.INTEGER);
-            } else {
-                stmt.setInt(8, closeContactCaseID);
-            }
+            stmt.setInt(8, closeContactCaseID);
             stmt.executeUpdate();
             // Retrieve the generated patientID
 
@@ -149,7 +143,7 @@ public class PatientDAO {
 
     public ArrayList<Patient> getPatientsByBCGVaccinationStatus(char isBCGVaccinated) {
         ArrayList<Patient> patients = new ArrayList<>();
-        String sql = "SELECT * FROM patient WHERE is_bcg_vaccinated = ?";
+        String sql = "SELECT * FROM patient WHERE is_bcg_vaccinated = ? ORDER BY patientID";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, String.valueOf(isBCGVaccinated));
             try (ResultSet rs = stmt.executeQuery()) {
@@ -175,8 +169,8 @@ public class PatientDAO {
     public ArrayList<Patient> getPatientsByCloseContactStatus(boolean hasCloseContactID) {
         ArrayList<Patient> patients = new ArrayList<>();
         String sql = hasCloseContactID ? 
-            "SELECT * FROM patient WHERE closecontactcaseID IS NOT NULL" : 
-            "SELECT * FROM patient WHERE closecontactcaseID IS NULL";
+            "SELECT * FROM patient WHERE closecontactcaseID IS NOT NULL ORDER BY patientID" : 
+            "SELECT * FROM patient WHERE closecontactcaseID IS NULL ORDER BY patientID";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -271,5 +265,36 @@ public class PatientDAO {
         Integer closeContactCaseID = patient.getClosecontactcaseID();
         System.out.println("Close Contact Case ID: " + (closeContactCaseID != 0 ? closeContactCaseID : "Null"));
         System.out.println();
+    }
+
+    public void printPatientsTable(ArrayList<Patient> patients) {
+        System.out.printf(
+        "+------------+----------------------------------------------------+------------+-----+----------------+----------------+\n"
+        );
+        System.out.printf(
+        "| Patient ID | Full Name                                          | Birthdate  | Sex | BCG Vaccinated | Close Contact  |\n"
+        );
+        System.out.printf(
+        "+------------+----------------------------------------------------+------------+-----+----------------+----------------+\n"
+        );
+
+        for (Patient patient : patients) {
+            String fullName = patient.getLastname() + ", " + patient.getFirstname() + " " + patient.getMiddlename();
+            String bcgVaccinated = (patient.getIs_bcg_vaccinated() == 'Y') ? "Yes" : "No";
+            Integer closeContactCaseID = patient.getClosecontactcaseID();
+
+            System.out.printf(
+            "| %-10s | %-50s | %-10s | %-3s | %-14s | %-14s |\n",
+            patient.getPatientID(),
+            fullName,
+            patient.getBirthdate(),
+            patient.getSex(),
+            bcgVaccinated,
+            closeContactCaseID != 0 ? closeContactCaseID : "Null"
+            );
+        }
+        System.out.printf(
+        "+------------+----------------------------------------------------+------------+-----+----------------+----------------+\n"
+    );
     }
 }
