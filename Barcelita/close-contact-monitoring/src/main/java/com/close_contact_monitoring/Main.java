@@ -13,6 +13,7 @@ public class Main {
 	private AddressDAO addressDAO;
 	private CloseContactDAO barangayDAO;
 	private ComorbidityDAO comorbidityDAO;
+	private GuardianDAO guardianDAO;
 
 	// ANSI escape codes for text colors
     public static final String RESET = "\033[0m";      // Reset color
@@ -21,14 +22,13 @@ public class Main {
 	public static final String ORANGE = "\033[38;5;214m"; // Orange 
     public static final String BLUE = "\033[0;34m";   // Blue
 
-	public Main(PatientDAO patientDAO, AddressDAO addressDAO, CloseContactDAO barangayDAO, ComorbidityDAO comorbidityDAO) {
+	public Main(PatientDAO patientDAO, AddressDAO addressDAO, CloseContactDAO barangayDAO, ComorbidityDAO comorbidityDAO, GuardianDAO guardianDAO) {
 		this.sc = new Scanner(System.in);
 		this.patientDAO = patientDAO;
 		this.addressDAO = addressDAO;
 		this.barangayDAO = barangayDAO;
 		this.comorbidityDAO = comorbidityDAO;
-		// this.addressDAO = addressDAO;
-		// this.barangayDAO = barangayDAO;
+		this.guardianDAO = guardianDAO;
 	}
 	
 	private void managePatientCoreData() {
@@ -36,21 +36,21 @@ public class Main {
 
         while (!exitSubMenu) {
             System.out.println(ORANGE + "\nManage Patient Core Data\n" + RESET);
-            System.out.println("[1] Create Patient Record.");
+            System.out.println("[1] Create Patient Record."); 
             System.out.println("[2] View Patient Record using Patient ID.");
             System.out.println("[3] Update Patient Record.");
-            System.out.println("[4] (Soft) Delete Patient Record.\n");
+            System.out.println("[4] (Soft) Delete Patient Record.\n"); //WIP
 			System.out.println("[5] Add Guardian to Patient Record.");
 			System.out.println("[6] View Guardian/s of Patient Record.");
-			System.out.println("[7] Delete a Guardian of Patient Record.\n");
+			System.out.println("[7] Delete a Guardian of Patient Record.\n"); //WIP
             System.out.println("[8] Add Comorbidity to Patient Record.");
 			System.out.println("[9] Add Comorbidity to Reference Table.");
             System.out.println("[10] View Comorbidities of Patient Record.");
-			System.out.println("[11] Delete a Comorbidity of Patient Record.\n");
-            System.out.println("[12] Add Patient TB Case to Patient Record.");
-			System.out.println("[13] View Patient TB Cases of Patient Record.");
-			System.out.println("[14] (Soft) Delete a Patient TB Case of Patient Record.\n");
-			System.out.println("[15] View a Patient Record and All Associated Records.");
+			System.out.println("[11] Delete a Comorbidity of Patient Record.\n"); //WIP
+            System.out.println("[12] Add Patient TB Case to Patient Record."); //WIP
+			System.out.println("[13] View Patient TB Cases of Patient Record."); //WIP
+			System.out.println("[14] (Soft) Delete a Patient TB Case of Patient Record.\n"); //WIP
+			System.out.println("[15] View a Patient Record and All Associated Records."); //WIP
 			System.out.println("[16] Back to Main Menu.");
             System.out.print("Enter choice: ");
             int choice = sc.nextInt();
@@ -91,10 +91,14 @@ public class Main {
 				case 5:
 					// Add your code for adding a guardian to a patient record here
 					System.out.println("Add Guardian to Patient Record selected.");
+					guardianDAO.addGuardianToPatientRecord();
 					break;
 				case 6:
 					// Add your code for viewing guardians of a patient record here
-					System.out.println("View Guardian/s of Patient Record selected.");
+					System.out.println(ORANGE + "\nView Guardian/s of Patient Record selected.\n" + RESET);
+					patientID = InputUtility.getIntInput("Enter Patient ID: ");
+					guardianDAO.viewGuardiansOfPatient(patientID);
+					
 					break;
 				case 7:
 					// Add your code for deleting a guardian of a patient record here
@@ -273,8 +277,9 @@ public class Main {
 		AddressDAO addressDAO = new AddressDAO(connection);
 		CloseContactDAO barangayDAO = new CloseContactDAO(connection);
 		ComorbidityDAO comorbidityDAO = new ComorbidityDAO(connection);
+		GuardianDAO guardianDAO = new GuardianDAO(connection);
 
-		Main app = new Main(patientDAO, addressDAO, barangayDAO, comorbidityDAO);
+		Main app = new Main(patientDAO, addressDAO, barangayDAO, comorbidityDAO, guardianDAO);
 		app.run(connection);
 	}
 }

@@ -7,15 +7,17 @@ import java.sql.SQLException;
 public class DatabaseKeepAlive {
     private final Connection connection;
     private final int intervalMillis; // Keep-alive interval in milliseconds
+    private boolean running = true;
 
     public DatabaseKeepAlive(Connection connection, int intervalMillis) {
         this.connection = connection;
         this.intervalMillis = intervalMillis;
+        this.running = true;
     }
 
     public void start() {
         Thread keepAliveThread = new Thread(() -> {
-            while (true) {
+            while (running) {
                 try {
                     Thread.sleep(intervalMillis);
                     // Send a lightweight query
@@ -31,6 +33,10 @@ public class DatabaseKeepAlive {
 
         keepAliveThread.setDaemon(true); // Daemon thread stops when the app exits
         keepAliveThread.start();
+    }
+
+    public void stop() {
+        running = false;
     }
 }
 
