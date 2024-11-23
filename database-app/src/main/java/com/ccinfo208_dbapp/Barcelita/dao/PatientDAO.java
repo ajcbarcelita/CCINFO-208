@@ -6,6 +6,7 @@ import com.ccinfo208_dbapp.Barcelita.utility.InputUtility;
 
 import java.time.LocalDate;
 import java.sql.*;
+import java.util.ArrayList;
 
 
 public class PatientDAO {
@@ -146,21 +147,112 @@ public class PatientDAO {
 
     // }
 
-    // public ArrayList<Patient> getPatientsByBCGVaccinationStatus() {
-        
-    // }
+    public ArrayList<Patient> getPatientsByBCGVaccinationStatus(char isBCGVaccinated) {
+        ArrayList<Patient> patients = new ArrayList<>();
+        String sql = "SELECT * FROM patient WHERE is_bcg_vaccinated = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, String.valueOf(isBCGVaccinated));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Patient patient = new Patient();
+                    patient.setPatientID(rs.getInt("patientID"));
+                    patient.setLastname(rs.getString("lastname"));
+                    patient.setFirstname(rs.getString("firstname"));
+                    patient.setMiddlename(rs.getString("middlename"));
+                    patient.setBirthdate(LocalDate.parse(rs.getString("birthday")));
+                    patient.setSex(rs.getString("sex").charAt(0));
+                    patient.setAddressID(rs.getInt("addressID"));
+                    patient.setIs_bcg_vaccinated(rs.getString("is_bcg_vaccinated").charAt(0));
+                    patients.add(patient);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving patients by BCG vaccination status: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return patients;
+    }
+    public ArrayList<Patient> getPatientsByCloseContactStatus(boolean hasCloseContactID) {
+        ArrayList<Patient> patients = new ArrayList<>();
+        String sql = hasCloseContactID ? 
+            "SELECT * FROM patient WHERE closecontactcaseID IS NOT NULL" : 
+            "SELECT * FROM patient WHERE closecontactcaseID IS NULL";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Patient patient = new Patient();
+                    patient.setPatientID(rs.getInt("patientID"));
+                    patient.setLastname(rs.getString("lastname"));
+                    patient.setFirstname(rs.getString("firstname"));
+                    patient.setMiddlename(rs.getString("middlename"));
+                    patient.setBirthdate(LocalDate.parse(rs.getString("birthday")));
+                    patient.setSex(rs.getString("sex").charAt(0));
+                    patient.setIs_bcg_vaccinated(rs.getString("is_bcg_vaccinated").charAt(0));
+                    patient.setAddressID(rs.getInt("addressID"));
+                    patient.setClosecontactcaseID(rs.getInt("closecontactcaseID"));
+                    patients.add(patient);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving patients by close contact status: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return patients;
+    }
 
-    // public ArrayList<Patient> getPatientsByBarangay() {
-        
-    // }
+    public void getPatientAndRelatedRecords(int patientID) {
+        // First part for everything except patient's guardians
+        String sqlPatientCoreData = "SELECT * FROM patientcoredata_view WHERE patientID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sqlPatientCoreData)) {
+            stmt.setInt(1, patientID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    System.out.println();
+                    System.out.println("Patient Core Data:");
+                    System.out.println("Patient ID: " + rs.getInt("patientID"));
+                    System.out.println("Full Name: " + rs.getString("patientfullname"));
+                    System.out.println("Birthdate: " + rs.getString("birthday"));
+                    System.out.println("Sex: " + rs.getString("sex"));
+                    System.out.println("BCG Vaccinated: " + rs.getString("is_bcg_vaccinated"));
+                    System.out.println("Comorbidities: " + rs.getString("patient_comorbidities"));
+                    System.out.println("Address: " + rs.getString("patientaddress"));
+                    System.out.println("Close Contact ID: " + rs.getInt("closecontactID"));
+                    System.out.println("Is Elevated to Patient: " + rs.getString("is_elevated_to_patient"));
+                    // Add more fields as needed
+                } else {
+                    System.out.println("No patient core data found for the given patient ID.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving patient core data: " + e.getMessage());
+            e.printStackTrace();
+        }
 
-    // public ArrayList<Patient> getPatientsByCloseContactID() {
-        
-    // }
-
-    // public Patient getPatientAndRelatedRecords(int patientID) { // includes comorbiity, guardian, and patient case
-    //     //if patient is not found, return null
-    // }
+        // Second part for patient's guardians
+        String sqlPatientGuardians = "SELECT * FROM patientguardians_view WHERE patientID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sqlPatientGuardians)) {
+            stmt.setInt(1, patientID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                System.out.println();
+                System.out.println("Patient Guardians:");
+                while (rs.next()) {
+                    System.out.println("Guardian ID: " + rs.getInt("guardianID"));
+                    System.out.println("Full Name: " + rs.getString("guardian_fullname"));
+                    System.out.println("Birthdate: " + rs.getString("birthdate"));
+                    System.out.println("Sex: " + rs.getString("sex"));
+                    System.out.println("Contact Number: " + rs.getString("contactno"));
+                    System.out.println("Email: " + rs.getString("email"));
+                    System.out.println("Relationship: " + rs.getString("relationship_to_patient"));
+                    System.out.println("Is Emergency Contact: " + rs.getString("is_emergency_contact"));
+                    // Add more fields as needed
+                    System.out.println();
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving patient guardians: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     
     public void printPatientDetails(Patient patient) {
