@@ -122,6 +122,9 @@ public class BarangayHealthWorkerDB {
                     exists = 1; 
                 }
             }
+
+            conn.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -200,6 +203,8 @@ public class BarangayHealthWorkerDB {
             } else {
                 System.out.println("No BHW record found with BHW ID: " + bhwID);
             }
+            conn.close();
+
             return rowsUpdated;
     
         } catch (SQLException e) {
@@ -223,11 +228,14 @@ public class BarangayHealthWorkerDB {
             int rowsDeleted = pstmt.executeUpdate();
             if (rowsDeleted > 0) {
                 System.out.println("BHW record deleted successfully for BHW ID: " + bhwID);
+
                 return 1; // deletion successful
             } else {
                 System.out.println("No BHW record found with BHW ID: " + bhwID);
                 return 0; // no record found to delete
             }
+
+            
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -248,8 +256,10 @@ public class BarangayHealthWorkerDB {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
+
                 return rs.getInt("barangayID");
             } else {
+
                 return -1; 
             }
 
@@ -271,6 +281,7 @@ public class BarangayHealthWorkerDB {
             pstmt.setInt(1, brgyID); // Set the barangayID parameter
     
             try (ResultSet rs = pstmt.executeQuery()) {
+
                 if (rs.next()) {
                     barangayName = rs.getString("barangayName"); // Retrieve the barangayName
                 } else {

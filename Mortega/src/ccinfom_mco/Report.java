@@ -53,6 +53,8 @@ public class Report {
 
                         rs = stmt.executeQuery();
 
+                        conn.close();
+
                         if (rs.next()) {
                         return rs.getInt("bhwID");
                         } else {
@@ -73,6 +75,8 @@ public class Report {
                         e.printStackTrace();
                         }
                 }
+
+
         }
 
 
@@ -108,6 +112,8 @@ public class Report {
                 stmt.setInt(2, month);
                 stmt.setInt(3, year);
                 rs = stmt.executeQuery();
+                conn.close();
+
 
                 // return the count of cases
                 if (rs.next()) {
@@ -159,6 +165,8 @@ public class Report {
                 stmt.setInt(2, month);
                 stmt.setInt(3, year);
                 rs = stmt.executeQuery();
+                conn.close();
+
 
                 // return count of cases
                 if (rs.next()) {

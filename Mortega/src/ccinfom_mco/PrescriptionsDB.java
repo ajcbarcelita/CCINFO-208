@@ -41,11 +41,15 @@ public class PrescriptionsDB {
 
             pstmt.setInt(1, physicianId);
             ResultSet rs = pstmt.executeQuery();
+            conn.close();
+
 
             // If a result is found, it means the physician ID exists
             if (rs.next()) {
+
                 return 1; // Physician ID exists
             } else {
+
                 return 0; // Physician ID does not exist
             }
 
@@ -73,15 +77,18 @@ public class PrescriptionsDB {
     
                 // Check if the given physician ID matches the involved physician for this case
                 if (involvedPhysician == physicianId) {
+
                     return 1; // Physician is involved in the case
                 } else {
+
                     return 0; // Physician is not involved in the case
-                }
+                } 
     
             } else {
+
                 return 0; // Case number does not exist
             }
-    
+
         } catch (SQLException e) {
             e.printStackTrace();
             return 0; // Return 0 in case of an error
@@ -103,11 +110,13 @@ public class PrescriptionsDB {
             ResultSet rs = pstmt.executeQuery();
     
             if (rs.next()) {
+
                 return 1; 
             } else {
+
                 return 0; 
             }
-    
+
         } catch (SQLException e) {
             e.printStackTrace();
             return 0; 
@@ -138,6 +147,8 @@ public class PrescriptionsDB {
                     statusVar = 1; // Set to 1 if value is 'T'
                 }
             }
+        
+
     
         } catch (SQLException e) {
             e.printStackTrace();
@@ -161,8 +172,10 @@ public class PrescriptionsDB {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
+
                 return 1; // Prescription serial number exists
             } else {
+
                 return 0; // Prescription serial number does not exist
             }
 
@@ -192,7 +205,6 @@ public class PrescriptionsDB {
             } else {
                 return 0; // Medicine does not exist
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             return 0; 
@@ -242,6 +254,7 @@ public int submit_prescriptions() {
         conn.commit();
         System.out.println("Prescription and medicines successfully submitted.");
 
+        conn.close();
         return 1; // saved
 
     } catch (SQLException e) {
@@ -327,7 +340,8 @@ public int submit_prescriptions() {
                 System.out.println("Duration: " + medicineRs.getString("duration_days"));
                 System.out.println("=======================================================");
             }
-    
+            
+            conn.close();
             return 1;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -377,11 +391,14 @@ public int submit_prescriptions() {
                 int prescriptionRowsDeleted = deletePrescription(conn, patientCaseID, prescriptionSerialNumber);
                 conn.commit();  // Commit the transaction
                 System.out.println("Prescription and associated medicines deleted successfully.");
+                conn.close();
                 return prescriptionRowsDeleted;
             } else {
                 System.out.println("No medicines found for this prescription serial number.");
+                conn.close();
                 return -1;
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             try {
