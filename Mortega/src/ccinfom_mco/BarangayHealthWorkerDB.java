@@ -135,9 +135,6 @@ public class BarangayHealthWorkerDB {
 	//updates existing bhw record
 	//returns 1 if successful. 0, otherwise
 	public int update_bhw_record() {
-        // Debug: Print the current state of fields
-        System.out.println("Debug: bhw_firstName = " + bhw_firstName);
-        System.out.println("Debug: barangayAssignedTo = " + barangayAssignedTo);
     
         StringBuilder sql = new StringBuilder("UPDATE bhw SET ");
         boolean hasValidField = false;
