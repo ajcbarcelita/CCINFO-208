@@ -136,17 +136,21 @@ public class AppController {
 		System.out.print("Middle Name: "); 
 		bhwdb.bhw_middleName = sc.next();
 
-		System.out.print("Barangay: "); 
-			//the barangay name will not be accepted unless it exists in the database
-			do {
-				bhwdb.barangayAssignedTo = sc.next();
+		System.out.print("Barangay: ");
+		sc.nextLine(); 
 
-				if (BarangayHealthWorkerDB.getBrgyNo(bhwdb.barangayAssignedTo) == -1) {
-					System.out.println("Barangay does not exist!");
-					System.out.print("Barangay: "); 
-				}
+		int brgyNo; 
+		do {
+			bhwdb.barangayAssignedTo = sc.nextLine().trim();
+			brgyNo = BarangayHealthWorkerDB.getBrgyNo(bhwdb.barangayAssignedTo);
+
+			if (brgyNo == -1) {
+				System.out.println("Barangay does not exist!");
+				System.out.print("Barangay: ");
 			}
-			while (BarangayHealthWorkerDB.getBrgyNo(bhwdb.barangayAssignedTo) == -1);
+		} while (brgyNo == -1);
+
+
 	
 		System.out.println("=======================================================");
 		System.out.println("\n\nProcessing Data...");
